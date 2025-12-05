@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  lpdp-mcp:
+    image: ghcr.io/adityaldy/lpdp-mcp:latest
+    container_name: lpdp-mcp-server
+    environment:
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - PINECONE_API_KEY=${PINECONE_API_KEY}
+      - PINECONE_INDEX_NAME=${PINECONE_INDEX_NAME:-lpdp-pencairan}
+    restart: unless-stopped
+    # MCP servers communicate via stdio, not network ports
+    # If you need to expose as HTTP, uncomment below:
+    # ports:
+    #   - "8080:8080"
+    volumes:
+      # Mount logs directory (optional)
+      - ./logs:/app/logs
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
